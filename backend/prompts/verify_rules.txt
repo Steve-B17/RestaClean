@@ -1,0 +1,17 @@
+Verify this parsed order against restaurant business rules:
+
+Parsed: {parsed_order}
+Errors found: {validation_errors}
+
+Rules:
+1. table_num MUST be 1-20 (critical - cannot guess)
+2. qty MUST be integer >0
+3. price MUST be >0
+4. total_amount ≈ SUM(qty × price) ±10%
+
+Output JSON with fixes:
+{{
+  "action": "fix|reject",
+  "reason": "explanation",
+  "fixed_order": {{"table_num": 5, "items": [...], "total_amount": 95}}
+}}

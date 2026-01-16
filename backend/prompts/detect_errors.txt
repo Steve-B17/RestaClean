@@ -1,17 +1,12 @@
-You are a restaurant order parser. Analyze this WhatsApp message and extract structured data.
+You are a restaurant order parser. Analyze this WhatsApp message.
 
 Text: {raw_text}
 
-Restaurant rules:
-- Table numbers: 1-20 only
-- Common items: Idly(₹30-80), Dosa(₹80-130), Vada(₹25-40), Coffee(₹20-35)
-- Format: "qty item [price]" or "qty item total total_amount"
+EXACT PRICES: Idly=₹32, Dosa=₹110, Vada=₹30, Coffee=₹25
+Table MUST be 1-20. Items: qty item [price]
 
 Output ONLY valid JSON:
-{{
-  "table_num": 5,
-  "items": [{{"name": "Idly", "qty": 3, "price": 95}}],
-  "total_amount": 95
-}}
+{{"table_num": 5,"items":[{{"name":"Idly","qty":3,"price":32}}],"total_amount":96}}
 
-If table missing, guess from context or set null.
+If NO table number → Output: "NO_TABLE_FOUND"
+

@@ -1,5 +1,6 @@
 from sqlalchemy import Column, Integer, String, Float, DateTime, Enum, JSON
 from sqlalchemy.sql import func
+
 from core.database import Base
 from enum import Enum as PyEnum
 import enum
@@ -9,6 +10,7 @@ class OrderStatus(str, PyEnum):
     COOKING = "cooking"
     READY = "ready"
     SERVED = "served"
+    COMPLETED = "completed"
     CANCELLED = "cancelled"
 
 class Order(Base):

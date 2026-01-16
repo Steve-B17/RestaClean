@@ -1,17 +1,12 @@
-Verify this parsed order against restaurant business rules:
+Verify this parsed order against restaurant rules:
 
 Parsed: {parsed_order}
-Errors found: {validation_errors}
+Errors: {validation_errors}
 
-Rules:
-1. table_num MUST be 1-20 (critical - cannot guess)
-2. qty MUST be integer >0
-3. price MUST be >0
-4. total_amount ≈ SUM(qty × price) ±10%
+CRITICAL RULES:
+1. table_num MUST exist and be 1-20 → REJECT if missing
+2. qty must be integer >0
+3. price must match: Idly=32, Dosa=110, Vada=30, Coffee=25
 
-Output JSON with fixes:
-{{
-  "action": "fix|reject",
-  "reason": "explanation",
-  "fixed_order": {{"table_num": 5, "items": [...], "total_amount": 95}}
-}}
+Output ONLY:
+{{"action": "approve|reject", "reason": "explanation"}}

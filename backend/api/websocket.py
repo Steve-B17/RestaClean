@@ -57,6 +57,6 @@ async def websocket_dashboard(websocket: WebSocket):
 async def get_kitchen_orders(db: Session = Depends(get_db)):
     """Fallback for kitchen page load"""
     orders = db.query(Order).filter(
-        Order.status.in_([OrderStatus.NEW, OrderStatus.COOKING])
+        Order.status.in_([OrderStatus.NEW, OrderStatus.COOKING,OrderStatus.READY,OrderStatus.SERVED])
     ).order_by(Order.cleaned_at).all()
     return [{"id": o.id, "table_num": o.table_num, "items": o.items, "total_amount": o.total_amount, "status": o.status.value} for o in orders]

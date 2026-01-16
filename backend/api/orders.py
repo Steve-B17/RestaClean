@@ -1,12 +1,16 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from sqlalchemy import text 
 from core.database import get_db
 from models.order import Order, OrderStatus
 from models.schemas import OrderInput, OrderStatusUpdate, CleanOrder
 from services.llm_cleaner import clean_order
 from utils.broadcast import broadcast_kitchen, broadcast_dashboard
-from core.redis_client import push_order_to_queue, get_active_table_order, set_active_table_order
+from core.redis_client import push_order_to_queue, get_active_table_order, set_active_table_order,remove_active_table_order
 import json
+from sqlalchemy import func
+from models.order import Order
+from datetime import date
 
 router = APIRouter()
 
@@ -31,7 +35,7 @@ async def process_raw_order(input_data: OrderInput, db: Session = Depends(get_db
     if active_order_id:
         # Update existing order
         order = db.query(Order).filter(Order.id == int(active_order_id)).first()
-        if order and order.status not in [OrderStatus.SERVED, OrderStatus.CANCELLED]:
+        if order and order.status not in [OrderStatus.COMPLETED, OrderStatus.CANCELLED]:
             # Add items to existing order
             existing_items = json.loads(order.items)
             new_items = clean_order_data["items"]
@@ -42,7 +46,8 @@ async def process_raw_order(input_data: OrderInput, db: Session = Depends(get_db
             order_id = order.id
         else:
             order_id = None
-    else:
+            active_order_id = None
+    if not active_order_id:
         # Create new order
         db_order = Order(
             table_num=clean_order_data["table_num"],
@@ -91,7 +96,8 @@ def update_order_status(order_id: int, status_update: OrderStatusUpdate, db: Ses
     
     order.status = OrderStatus(status_update.status)
     db.commit()
-    
+    if order.status == OrderStatus.COMPLETED:
+        remove_active_table_order(order.table_num)
     # Broadcast status change
     broadcast_kitchen("status_update", {
         "order_id": order_id,
@@ -105,11 +111,12 @@ def update_order_status(order_id: int, status_update: OrderStatusUpdate, db: Ses
     return {"success": True, "order_id": order_id, "new_status": status_update.status}
 
 def calculate_daily_revenue(db: Session) -> float:
-    """Helper for dashboard"""
-    result = db.execute(
-        "SELECT COALESCE(SUM(total_amount), 0) FROM orders WHERE DATE(cleaned_at) = CURRENT_DATE"
-    ).scalar()
-    return result or 0.0
+    """Pure ORM - No raw SQL"""
+    today = date.today()
+    result = db.query(func.coalesce(func.sum(Order.total_amount), 0)) \
+               .filter(func.date(Order.cleaned_at) == today) \
+               .scalar()
+    return float(result)
 
 
 @router.post("/orders/whatsapp")

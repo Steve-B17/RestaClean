@@ -26,3 +26,5 @@ def get_active_table_order(table_num: int) -> Optional[str]:
 def set_active_table_order(table_num: int, order_id: str, ttl: int = 3600):
     """Set current order for table (1 hour TTL)"""
     redis_client.setex(f"active_table:{table_num}", ttl, order_id)
+def remove_active_table_order(table_num: int):
+    redis_client.delete(f"active_table:{table_num}")

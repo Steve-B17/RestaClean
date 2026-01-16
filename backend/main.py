@@ -4,7 +4,7 @@ from api.orders import router as orders_router
 from api.websocket import router as websocket_router
 from core.database import engine, Base
 import logging
-
+from api.analytics import router as analytics_router
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -27,7 +27,8 @@ app.add_middleware(
 # Include routers
 app.include_router(orders_router, prefix="/api/v1", tags=["orders"])
 app.include_router(websocket_router, prefix="/api/v1", tags=["websocket"])
-app.include_router(websocket_router, prefix="/api/v1", tags=["websocket"])
+# app.include_router(websocket_router, prefix="/api/v1", tags=["websocket"])
+app.include_router(analytics_router, prefix="/api/v1", tags=["analytics"])
 
 # Create tables
 Base.metadata.create_all(bind=engine)

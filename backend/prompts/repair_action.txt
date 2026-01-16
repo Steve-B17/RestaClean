@@ -1,16 +1,15 @@
-Fix these specific errors using restaurant knowledge:
+FIX this order using EXACT restaurant prices:
 
-Errors: {validation_errors}
-Current: {parsed_order}
+Current broken order: {parsed_order}
+Validation errors: {validation_errors}
 
-Fix rules:
-- Idly: ₹32 each, Vada: ₹30, Dosa: ₹110
-- If total given, price = total ÷ qty
-- Table# missing = REJECT (ask waiter)
+FIX RULES:
+- Idly ALWAYS ₹32 each
+- Dosa ALWAYS ₹110 each  
+- Vada ALWAYS ₹30 each
+- Coffee ALWAYS ₹25 each
+- Table MUST be 1-20 or REJECT
+- total_amount = SUM(qty × correct_price)
 
 Output ONLY fixed JSON:
-{{
-  "table_num": 5,
-  "items": [{{"name": "Idly", "qty": 3, "price": 31.67}}],
-  "total_amount": 95
-}}
+{{"table_num":5,"items":[{{"name":"Idly","qty":3,"price":32}}],"total_amount":96}}

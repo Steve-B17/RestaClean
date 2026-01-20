@@ -5,7 +5,15 @@ from api.websocket import router as websocket_router
 from core.database import engine, Base
 import logging
 from api.analytics import router as analytics_router
+import os
+from twilio.rest import Client
+from twilio.twiml.messaging_response import MessagingResponse
+from dotenv import load_dotenv
+load_dotenv()
 # Configure logging
+
+
+# client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 

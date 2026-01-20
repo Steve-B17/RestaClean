@@ -11,3 +11,4 @@ langchain-core==0.3.10
 websockets==15.0.1
 python-dotenv==1.0.1
 structlog==24.4.0
+twilio==9.3.1

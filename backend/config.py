@@ -8,6 +8,9 @@ class Settings(BaseSettings):
     whatsapp_token: Optional[str] = None
     secret_key: str = "change-in-production"
     debug: bool = True
+    twilio_account_sid: str
+    twilio_auth_token: str
+    twilio_whatsapp_number: str
     
     class Config:
         env_file = ".env"
